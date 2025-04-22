@@ -46,11 +46,12 @@ repositories {
     }
 
     mavenCentral()
+    maven { url 'https://jitpack.io' }
     google()
 }
 
 dependencies {
-    implementation 'com.github.doublesymmetry:kotlinaudio:v2.1.0'
+    implementation 'com.github.planfit:KotlinAudio:1315d87487'
     // used when building against local maven
 //    implementation "com.github.doublesymmetry:kotlin-audio:2.1.0"
 

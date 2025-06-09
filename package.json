@@ -100,7 +100,7 @@
     "husky": "^8.0.0",
     "prettier": "^3.5.1",
     "react": "18.3.1",
-    "react-native": "0.72.2",
+    "react-native": "0.77.2",
     "react-native-windows": "^0.77.2",
     "rimraf": "^5.0.10",
     "shaka-player": "^4.15.1",

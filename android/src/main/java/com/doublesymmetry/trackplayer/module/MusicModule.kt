@@ -364,7 +364,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
     }
 
     @ReactMethod
-    fun clearNowPlayingMetadata(callback: Promise) = slaunchInScope {
+    fun clearNowPlayingMetadata(callback: Promise) = launchInScope {
         if (verifyServiceBoundOrReject(callback)) return@launchInScope
 
         if (musicService.tracks.isEmpty())
@@ -623,7 +623,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
 
     @ReactMethod
     fun getPlaybackState(callback: Promise) = launchInScope {
-        if (verifyServiceBoundOrReject(callback)) return@launch
+        if (verifyServiceBoundOrReject(callback)) return@launchInScope
         callback.resolve(Arguments.fromBundle(musicService.getPlayerStateBundle(musicService.state)))
     }
 

@@ -14,6 +14,7 @@ export enum State {
   /**
    * @deprecated Use `State.Loading` instead.
    **/
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
   Connecting = 'loading',
   /**
    * Indicates that the player is currently loading more data before it can

@@ -1,6 +1,7 @@
 package com.doublesymmetry.trackplayer.service
 
 import android.app.*
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -105,24 +106,46 @@ class MusicService : HeadlessJsTaskService() {
      * information see https://github.com/doublesymmetry/react-native-track-player/issues/1666
      */
     private fun startAndStopEmptyNotificationToAvoidANR() {
-        val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(
-                NotificationChannel(getString(TrackPlayerR.string.rntp_temporary_channel_id), getString(TrackPlayerR.string.rntp_temporary_channel_name), NotificationManager.IMPORTANCE_LOW)
-            )
-        }
+        try {
+            // Check if we can start foreground service
+            // On Android 12+ (API 31+), starting foreground service from background is restricted
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val appProcesses = activityManager.runningAppProcesses
+                val currentProcess = appProcesses?.find { it.pid == android.os.Process.myPid() }
 
-        val notificationBuilder = NotificationCompat.Builder(this, getString(TrackPlayerR.string.rntp_temporary_channel_id))
-            .setPriority(PRIORITY_LOW)
-            .setCategory(Notification.CATEGORY_SERVICE)
-            .setSmallIcon(ExoPlayerR.drawable.exo_notification_small_icon)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            notificationBuilder.foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
+                // Only start foreground if app is in foreground or foreground service state
+                val canStartForeground = currentProcess?.importance?.let { importance ->
+                    importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE
+                } ?: false
+
+                if (!canStartForeground) {
+                    Timber.d("Cannot start foreground service from background on Android 12+")
+                    return
+                }
+            }
+
+            val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.createNotificationChannel(
+                    NotificationChannel(getString(TrackPlayerR.string.rntp_temporary_channel_id), getString(TrackPlayerR.string.rntp_temporary_channel_name), NotificationManager.IMPORTANCE_LOW)
+                )
+            }
+
+            val notificationBuilder = NotificationCompat.Builder(this, getString(TrackPlayerR.string.rntp_temporary_channel_id))
+                .setPriority(PRIORITY_LOW)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setSmallIcon(ExoPlayerR.drawable.exo_notification_small_icon)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                notificationBuilder.foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
+            }
+            val notification = notificationBuilder.build()
+            startForeground(EMPTY_NOTIFICATION_ID, notification)
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to start foreground notification")
         }
-        val notification = notificationBuilder.build()
-        startForeground(EMPTY_NOTIFICATION_ID, notification)
-        @Suppress("DEPRECATION")
-        stopForeground(true)
     }
 
     @MainThread

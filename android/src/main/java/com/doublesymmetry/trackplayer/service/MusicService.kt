@@ -764,9 +764,7 @@ class MusicService : HeadlessJsTaskService() {
 
     @MainThread
     private fun emit(event: String, data: Bundle? = null) {
-        reactNativeHost.reactInstanceManager.currentReactContext
-            ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-            ?.emit(event, data?.let { Arguments.fromBundle(it) })
+        reactContext.emitDeviceEvent(event, data?.let { Arguments.fromBundle(it) })
     }
 
     @MainThread
@@ -774,9 +772,7 @@ class MusicService : HeadlessJsTaskService() {
         val payload = Arguments.createArray()
         data.forEach { payload.pushMap(Arguments.fromBundle(it)) }
 
-        reactNativeHost.reactInstanceManager.currentReactContext
-            ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-            ?.emit(event, payload)
+        reactContext.emitDeviceEvent(event, payload)
     }
 
     override fun getTaskConfig(intent: Intent?): HeadlessJsTaskConfig {

@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
+import androidx.media.AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
@@ -536,7 +537,7 @@ abstract class BaseAudioPlayer internal constructor(
 
             val manager = ContextCompat.getSystemService(context, AudioManager::class.java)
 
-            focus = AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+            focus = AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
                 .setOnAudioFocusChangeListener(
                     { focusChange ->
                         Timber.d("Audio focus changed")

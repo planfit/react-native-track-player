@@ -18,7 +18,7 @@ public class NativeTrackPlayerImpl: NSObject, AudioSessionControllerDelegate {
 
     private var hasInitialized = false
     private let player = QueuedAudioPlayer()
-    private let audioSessionController = AudioSessionController.shared
+    // private let audioSessionController = AudioSessionController.shared
     private var shouldEmitProgressEvent: Bool = false
     private var shouldResumePlaybackAfterInterruptionEnds: Bool = false
     private var forwardJumpInterval: NSNumber? = nil;
@@ -32,7 +32,7 @@ public class NativeTrackPlayerImpl: NSObject, AudioSessionControllerDelegate {
 
     public override init() {
         super.init()
-        audioSessionController.delegate = self
+        // audioSessionController.delegate = self
         player.playWhenReady = false;
         player.event.receiveChapterMetadata.addListener(self, handleAudioPlayerChapterMetadataReceived)
         player.event.receiveTimedMetadata.addListener(self, handleAudioPlayerTimedMetadataReceived)
@@ -147,7 +147,7 @@ public class NativeTrackPlayerImpl: NSObject, AudioSessionControllerDelegate {
         let mappedCategoryOpts = sessionCategoryOptsStr?.compactMap { SessionCategoryOptions(rawValue: $0)?.mapConfigToAVAudioSessionCategoryOptions() } ?? []
         sessionCategoryOptions = AVAudioSession.CategoryOptions(mappedCategoryOpts)
 
-        configureAudioSession()
+        // configureAudioSession()
 
         // setup event listeners
         player.remoteCommandController.handleChangePlaybackPositionCommand = { [weak self] event in
@@ -233,25 +233,25 @@ public class NativeTrackPlayerImpl: NSObject, AudioSessionControllerDelegate {
     }
 
 
-    private func configureAudioSession() {
+    // private func configureAudioSession() {
 
-        // deactivate the session when there is no current item to be played
-        if (player.currentItem == nil) {
-            try? audioSessionController.deactivateSession()
-            return
-        }
+    //     // deactivate the session when there is no current item to be played
+    //     if (player.currentItem == nil) {
+    //         try? audioSessionController.deactivateSession()
+    //         return
+    //     }
 
-        // activate the audio session when there is an item to be played
-        // and the player has been configured to start when it is ready loading:
-        if (player.playWhenReady) {
-            try? audioSessionController.activateSession()
-            if #available(iOS 11.0, *) {
-                try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, policy: sessionCategoryPolicy, options: sessionCategoryOptions)
-            } else {
-                try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, options: sessionCategoryOptions)
-            }
-        }
-    }
+    //     // activate the audio session when there is an item to be played
+    //     // and the player has been configured to start when it is ready loading:
+    //     if (player.playWhenReady) {
+    //         try? audioSessionController.activateSession()
+    //         if #available(iOS 11.0, *) {
+    //             try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, policy: sessionCategoryPolicy, options: sessionCategoryOptions)
+    //         } else {
+    //             try? AVAudioSession.sharedInstance().setCategory(sessionCategory, mode: sessionCategoryMode, options: sessionCategoryOptions)
+    //         }
+    //     }
+    // }
 
     @objc(isServiceRunning:rejecter:)
     public func isServiceRunning(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
@@ -766,9 +766,9 @@ public class NativeTrackPlayerImpl: NSObject, AudioSessionControllerDelegate {
             }
         }
 
-        if ((item != nil && lastItem == nil) || item == nil) {
-            configureAudioSession();
-        }
+        // if ((item != nil && lastItem == nil) || item == nil) {
+        //     configureAudioSession();
+        // }
 
         var a: Dictionary<String, Any> = ["lastPosition": lastPosition ?? 0]
         if let lastIndex = lastIndex {
@@ -808,7 +808,7 @@ public class NativeTrackPlayerImpl: NSObject, AudioSessionControllerDelegate {
     }
 
     func handlePlayWhenReadyChange(playWhenReady: Bool) {
-        configureAudioSession();
+        // configureAudioSession();
         emit(
             event: EventType.PlaybackPlayWhenReadyChanged,
             body: [

@@ -793,11 +793,11 @@ class MusicService : HeadlessJsMediaService() {
     @MainThread
     override fun onDestroy() {
         if (::player.isInitialized) {
-            Timber.d("Releasing media session and destroying player")
-            mediaSession.release()
+            Timber.d("Destroying player")
             player.destroy()
         }
 
+        mediaSession.release()
         progressUpdateJob?.cancel()
         super.onDestroy()
     }

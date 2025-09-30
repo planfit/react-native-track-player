@@ -1,6 +1,6 @@
 {
   "name": "react-native-track-player",
-  "version": "4.1.1-rc.4",
+  "version": "4.1.1-rc.5",
   "description": "A fully fledged audio module created for music apps",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
@@ -105,7 +105,7 @@
     "react-native-windows": "0.77.3",
     "rimraf": "5.0.10",
     "shaka-player": "4.15.1",
-    "typescript": "4.8.2"
+    "typescript": "5.8.3"
   },
   "funding": "https://github.com/doublesymmetry/react-native-track-player?sponsor=1",
   "config": {

@@ -32,13 +32,13 @@ function resolveImportedAssetOrPath(pathOrAsset: string | number | undefined) {
   return pathOrAsset === undefined
     ? undefined
     : typeof pathOrAsset === 'string'
-    ? pathOrAsset
-    : resolveImportedAsset(pathOrAsset);
+      ? pathOrAsset
+      : resolveImportedAsset(pathOrAsset);
 }
 
 function resolveImportedAsset(id?: number) {
   return id
-    ? (resolveAssetSource(id) as { uri: string } | null) ?? undefined
+    ? ((resolveAssetSource(id) as { uri: string } | null) ?? undefined)
     : undefined;
 }
 
@@ -78,7 +78,7 @@ export function addEventListener<T extends Event>(
   event: T,
   listener: EventPayloadByEvent[T] extends never
     ? () => void
-    : (event: EventPayloadByEvent[T]) => void
+    : (event: EventPayloadByEvent[T]) => void,
 ) {
   return emitter.addListener(event, listener);
 }
@@ -101,7 +101,7 @@ export function isServiceRunning(): Promise<boolean> {
  */
 export async function add(
   tracks: AddTrack[],
-  insertBeforeIndex?: number
+  insertBeforeIndex?: number,
 ): Promise<number | void>;
 /**
  * Adds a track to the queue.
@@ -112,18 +112,18 @@ export async function add(
  */
 export async function add(
   track: AddTrack,
-  insertBeforeIndex?: number
+  insertBeforeIndex?: number,
 ): Promise<number | void>;
 export async function add(
   tracks: AddTrack | AddTrack[],
-  insertBeforeIndex = -1
+  insertBeforeIndex = -1,
 ): Promise<number | void> {
   const resolvedTracks = (Array.isArray(tracks) ? tracks : [tracks]).map(
     (track) => ({
       ...track,
       url: resolveImportedAssetOrPath(track.url),
       artwork: resolveImportedAssetOrPath(track.artwork),
-    })
+    }),
   );
   return resolvedTracks.length < 1
     ? undefined
@@ -172,7 +172,7 @@ export async function remove(indexes: number[]): Promise<void>;
 export async function remove(index: number): Promise<void>;
 export async function remove(indexOrIndexes: number | number[]): Promise<void> {
   return TrackPlayer.remove(
-    Array.isArray(indexOrIndexes) ? indexOrIndexes : [indexOrIndexes]
+    Array.isArray(indexOrIndexes) ? indexOrIndexes : [indexOrIndexes],
   );
 }
 
@@ -251,7 +251,7 @@ export async function updateOptions({
  */
 export async function updateMetadataForTrack(
   trackIndex: number,
-  metadata: TrackMetadataBase
+  metadata: TrackMetadataBase,
 ): Promise<void> {
   return TrackPlayer.updateMetadataForTrack(trackIndex, {
     ...metadata,
@@ -273,7 +273,7 @@ export function clearNowPlayingMetadata(): Promise<void> {
  * without affecting the data stored for the current track.
  */
 export function updateNowPlayingMetadata(
-  metadata: NowPlayingMetadata
+  metadata: NowPlayingMetadata,
 ): Promise<void> {
   return TrackPlayer.updateNowPlayingMetadata({
     ...metadata,
@@ -317,7 +317,7 @@ export async function stop(): Promise<void> {
  * or `TrackPlayer.pause()` when `playWhenReady = false`.
  */
 export async function setPlayWhenReady(
-  playWhenReady: boolean
+  playWhenReady: boolean,
 ): Promise<boolean> {
   return TrackPlayer.setPlayWhenReady(playWhenReady);
 }

@@ -1,6 +1,6 @@
 {
   "name": "react-native-track-player",
-  "version": "4.1.1-rc.3",
+  "version": "4.1.1-rc.4",
   "description": "A fully fledged audio module created for music apps",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
@@ -94,7 +94,7 @@
     "@types/react-native": "0.73.0",
     "@typescript-eslint/eslint-plugin": "8.32.1",
     "@typescript-eslint/parser": "8.32.1",
-    "conventional-changelog-cli": "2.2.2",
+    "conventional-changelog-cli": "5.0.0",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "8.57.1",
     "eslint-plugin-react-hooks": "5.2.0",

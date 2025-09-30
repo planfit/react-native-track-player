@@ -1,3 +1,11 @@
+## [4.1.2](https://github.com/doublesymmetry/react-native-track-player/compare/v4.1.1-alpha0...v4.1.2) (2025-09-30)
+
+
+
+## [4.1.1-alpha2](https://github.com/doublesymmetry/react-native-track-player/compare/v4.1.1-alpha0...v4.1.1-alpha2) (2025-09-30)
+
+
+
 ## [4.1.1-alpha0](https://github.com/doublesymmetry/react-native-track-player/compare/v4.1.1-rc.9...v4.1.1-alpha0) (2025-09-30)
 
 

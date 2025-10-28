@@ -92,11 +92,6 @@
     "react-native": "*",
     "shaka-player": "^4.7.9"
   },
-  "peerDependenciesMeta": {
-    "shaka-player": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/compat": "^1.2.7",

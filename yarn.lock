@@ -10770,9 +10770,6 @@ __metadata:
     react: "*"
     react-native: "*"
     shaka-player: ^4.7.9
-  peerDependenciesMeta:
-    shaka-player:
-      optional: true
   languageName: unknown
   linkType: soft
 

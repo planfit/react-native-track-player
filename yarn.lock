@@ -5697,6 +5697,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eme-encryption-scheme-polyfill@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "eme-encryption-scheme-polyfill@npm:2.2.3"
+  checksum: 9414aeacc78ea1ebe90f011fd47a309919ded825b93b6a0218f6f0d5d16e865c4d183a24ba55caeed3d02f03cf50003bf6b2fb4bbd7ca2753cd50a3b048d7de7
+  languageName: node
+  linkType: hard
+
 "emittery@npm:^0.13.1":
   version: 0.13.1
   resolution: "emittery@npm:0.13.1"
@@ -10756,13 +10763,13 @@ __metadata:
     react-native: 0.80.0
     react-native-builder-bob: ^0.40.12
     release-it: ^17.10.0
-    shaka-player: ^4.7.9
+    shaka-player: 4.15.4
     turbo: ^1.10.7
     typescript: ^5.8.3
   peerDependencies:
     react: "*"
     react-native: "*"
-    shaka-player: ^4.7.9
+    shaka-player: 4.15.4
   languageName: unknown
   linkType: soft
 
@@ -11463,10 +11470,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shaka-player@npm:^4.7.9":
-  version: 4.16.7
-  resolution: "shaka-player@npm:4.16.7"
-  checksum: 70dfc441ef1a69eeb48c4d9eab653ee3fd2211c5dfcb2add109ad112e265524fbe4916670a80c48896136f87b6427e951376f4f6e5e9ac5196ab6fcec01a3435
+"shaka-player@npm:4.15.4":
+  version: 4.15.4
+  resolution: "shaka-player@npm:4.15.4"
+  dependencies:
+    eme-encryption-scheme-polyfill: ^2.2.3
+  checksum: 67a5c67e855277c315e2cf21bd011470696333a1365ae979fdf0bf3f918d1305656b470ac75a075771e858dc257c7dcd9489f9db4953aff581fc306a010d6df4
   languageName: node
   linkType: hard
 

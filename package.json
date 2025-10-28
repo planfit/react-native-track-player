@@ -1,6 +1,6 @@
 {
   "name": "react-native-track-player",
-  "version": "5.0.0-alpha6",
+  "version": "5.0.0-alpha7",
   "description": "A fully fledged audio module created for music apps",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -90,7 +90,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "shaka-player": "^4.7.9"
+    "shaka-player": "4.15.4"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.6.0",
@@ -115,7 +115,7 @@
     "react-native": "0.80.0",
     "react-native-builder-bob": "^0.40.12",
     "release-it": "^17.10.0",
-    "shaka-player": "^4.7.9",
+    "shaka-player": "4.15.4",
     "turbo": "^1.10.7",
     "typescript": "^5.8.3"
   },

@@ -10763,7 +10763,7 @@ __metadata:
     react-native: 0.80.0
     react-native-builder-bob: ^0.40.12
     release-it: ^17.10.0
-    shaka-player: ^4.15.4
+    shaka-player: 4.15.4
     turbo: ^1.10.7
     typescript: ^5.8.3
   peerDependencies:
@@ -11473,7 +11473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shaka-player@npm:^4.15.4":
+"shaka-player@npm:4.15.4":
   version: 4.15.4
   resolution: "shaka-player@npm:4.15.4"
   dependencies:

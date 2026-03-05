@@ -78,6 +78,11 @@ class MusicService : HeadlessJsMediaService() {
         sWakeLock?.release()
     }
 
+    @MainThread
+    fun abandonAudioFocus() {
+        player.abandonAudioFocus()
+    }
+
     fun getBitmapLoader(): BitmapLoader {
         return mediaSession.bitmapLoader
     }

@@ -99,6 +99,7 @@ export interface Spec extends TurboModule {
   // android methods
   acquireWakeLock(): Promise<void>;
   abandonWakeLock(): Promise<void>;
+  abandonAudioFocus(): Promise<void>;
   validateOnStartCommandIntent(): Promise<boolean>;
 }
 

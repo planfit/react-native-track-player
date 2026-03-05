@@ -261,6 +261,21 @@ abstract class BaseAudioPlayer internal constructor(
     }
 
     /**
+     * Abandons audio focus so other apps can restore their volume.
+     * Uses ExoPlayer's setAudioAttributes toggle when handleAudioFocus is true,
+     * otherwise uses the custom FocusManager.
+     */
+    fun abandonAudioFocus() {
+        if (options.handleAudioFocus) {
+            val attrs = exoPlayer.audioAttributes
+            exoPlayer.setAudioAttributes(attrs, false)
+            exoPlayer.setAudioAttributes(attrs, true)
+        } else {
+            focusManager.abandonAudioFocusIfHeld()
+        }
+    }
+
+    /**
      * Stops and destroys the player. Only call this when you are finished using the player, otherwise use [pause].
      */
     @CallSuper

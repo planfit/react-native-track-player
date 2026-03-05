@@ -556,6 +556,12 @@ class MusicModule(reactContext: ReactApplicationContext) : NativeTrackPlayerSpec
         callback.resolve(null)
     }
 
+    override fun abandonAudioFocus(callback: Promise) = launchInScope {
+        if (verifyServiceBoundOrReject(callback)) return@launchInScope
+        musicService.abandonAudioFocus()
+        callback.resolve(null)
+    }
+
     override fun validateOnStartCommandIntent(callback: Promise) = launchInScope {
         if (verifyServiceBoundOrReject(callback)) return@launchInScope
         callback.resolve(musicService.onStartCommandIntentValid)

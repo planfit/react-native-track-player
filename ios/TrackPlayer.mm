@@ -199,6 +199,9 @@ RCT_EXPORT_MODULE()
 - (void)abandonWakeLock:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
   resolve(nil);
 }
+- (void)abandonAudioFocus:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+  resolve(nil);
+}
 - (void)acquireWakeLock:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
   resolve(nil);
 }

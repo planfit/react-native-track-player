@@ -447,6 +447,14 @@ export async function abandonWakeLock() {
 }
 
 /**
+ * Abandons audio focus so other apps can restore their volume (android only.)
+ */
+export async function abandonAudioFocus(): Promise<void> {
+  if (!isAndroid) return;
+  return TrackPlayer.abandonAudioFocus();
+}
+
+/**
  * get onStartCommandIntent is null or not (Android only.). this is used to identify
  * if musicservice is restarted or not.
  */

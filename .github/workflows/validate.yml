@@ -25,7 +25,7 @@ jobs:
             workflow:
               - '.github/workflows/validate.yml'
             js:
-              - '.node-version'
+              - '.nvmrc'
               - 'eslint.config.mjs'
               - 'package.json'
               - 'tsconfig.json'
@@ -57,7 +57,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: .nvmrc
       - name: Enable Corepack (Yarn 3)
         run: corepack enable
       - name: Install Dependencies
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: .nvmrc
       - name: Enable Corepack (Yarn 3)
         run: corepack enable
       - name: Install Dependencies
@@ -128,7 +128,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: .nvmrc
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -169,7 +169,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: .nvmrc
       - name: Enable Corepack (Yarn 3)
         run: corepack enable
       - name: Install Dependencies

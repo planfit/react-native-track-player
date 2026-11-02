@@ -4,7 +4,7 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -12,10 +12,9 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should-build-docs: ${{ steps.filter.outputs.docs || steps.filter.outputs.workflow }}
-      should-build-ios: ${{ steps.filter.outputs.ios || steps.filter.outputs.workflow || steps.filter.outputs.js }}
-      should-build-android: ${{ steps.filter.outputs.android || steps.filter.outputs.workflow || steps.filter.outputs.js }}
-      should-check-types: ${{ steps.filter.outputs.js || steps.filter.outputs.workflow }}
+      should-build-docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
+      should-build-module: ${{ steps.filter.outputs.js == 'true' || steps.filter.outputs.workflow == 'true' }}
+      should-check-types: ${{ steps.filter.outputs.js == 'true' || steps.filter.outputs.workflow == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -25,164 +24,86 @@ jobs:
             workflow:
               - '.github/workflows/validate.yml'
             js:
-              - '.node-version'
-              - '.eslintrc.js'
-              - '.prettierrc.js'
+              - '.nvmrc'
+              - 'eslint.config.mjs'
               - 'package.json'
               - 'tsconfig.json'
+              - 'tsconfig.build.json'
               - 'yarn.lock'
               - 'src/**'
+              - 'web/**'
+              - 'lib/**'
               - 'example/src/**'
               - 'example/**.json'
               - 'example/**.js'
-            ios:
-              - 'ios/**'
-              - 'example/ios/**'
-            android:
-              - 'android/**'
-              - 'example/android/**'
             docs:
               - 'docs/**'
+
   check-typescript:
     runs-on: ubuntu-latest
     needs: check-changes
+    if: needs.check-changes.outputs.should-check-types == 'true'
     steps:
       - name: Checkout Repo
-        if: ${{ needs.check-changes.outputs.should-check-types }}
         uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          +: classic.yarnpkg.com
+          node-version-file: .nvmrc
+      - name: Enable Corepack (Yarn 3)
+        run: corepack enable
       - name: Install Dependencies
-        if: ${{ needs.check-changes.outputs.should-check-types }}
-        run: |-
-          yarn install --frozen-lockfile
-      - name: Install Example Dependencies
-        if: ${{ needs.check-changes.outputs.should-check-types }}
-        run: |-
-          yarn example install --frozen-lockfile
+        run: yarn install --immutable
       - name: Check Lint, Format & Types
-        if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |
           yarn lint
           yarn format
           yarn typecheck
       - name: Example - Check Lint, Format & Types
-        if: ${{ needs.check-changes.outputs.should-check-types }}
         run: |
           yarn example lint
           yarn example format
           yarn example typecheck
-  build-ios:
-    runs-on: blaze/macos-14
-    needs: check-changes
-    steps:
-      - name: Checkout Repo
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v2
-        with:
-          +: ruby-lang.org@3.1.0
-            classic.yarnpkg.com
-            tuist.io/xcbeautify
-      - name: Install Library Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: yarn install --frozen-lockfile
-      - name: Build Library
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: yarn build
-      - name: Install Example Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: |-
-          cd example
-          yarn install --frozen-lockfile
-      - name: Bundle Install
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: |-
-          cd example/ios
-          pkgx +ruby-lang.org@3.1.0 gem install bundler
-          pkgx +ruby-lang.org@3.1.0 bundle config set --local path 'vendor/bundle'
-          pkgx +ruby-lang.org@3.1.0 bundle install
-      - name: Cache Cocoapods Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        uses: buildjet/cache@v4
-        with:
-          path: example/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('example/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-      - name: Install Cococapods
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: |-
-          cd example/ios
-          pkgx +ruby-lang.org@3.1.0 bundle exec pod install
-      - name: Build App
-        if: ${{ needs.check-changes.outputs.should-build-ios }}
-        run: |-
-          cd example/ios
-          set -o pipefail && xcodebuild build -workspace TrackPlayerExample.xcworkspace -scheme TrackPlayerExample -destination 'platform=iOS Simulator,name=iPhone 15 Pro' | xcbeautify --renderer github-actions
-  build-android:
+
+  build-module:
     runs-on: ubuntu-latest
     needs: check-changes
+    if: needs.check-changes.outputs.should-build-module == 'true'
     steps:
       - name: Checkout Repo
-        if: ${{ needs.check-changes.outputs.should-build-android }}
         uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          +: classic.yarnpkg.com
-      - name: Install Library Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-android }}
-        run: yarn install --frozen-lockfile
+          node-version-file: .nvmrc
+      - name: Enable Corepack (Yarn 3)
+        run: corepack enable
+      - name: Install Dependencies
+        run: yarn install --immutable
       - name: Build Library
-        if: ${{ needs.check-changes.outputs.should-build-android }}
         run: yarn build
-      - name: Install Mobile Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-android }}
-        run: |-
-          cd example
-          yarn install
-      - name: Cache Gradle Wrapper
-        if: ${{ needs.check-changes.outputs.should-build-android }}
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Cache Gradle Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-android }}
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Build App
-        if: ${{ needs.check-changes.outputs.should-build-android }}
-        run: |-
-          cd example/android
-          ./gradlew assembleDebug --no-daemon
+      # planfit-client-rn 은 이 포크를 github: URL 로 받아 커밋된 lib/ 를 그대로 쓴다
+      # (prepare 스크립트 없음, 3fd0728). src 를 바꾸고 lib 를 다시 만들지 않으면 앱에 반영되지 않는다.
+      - name: Check prebuilt lib is up to date
+        run: git diff --exit-code -- lib
+
   build-docs:
     runs-on: ubuntu-latest
     needs: check-changes
+    if: needs.check-changes.outputs.should-build-docs == 'true'
     defaults:
       run:
         working-directory: docs
     steps:
       - name: Checkout Repo
-        if: ${{ needs.check-changes.outputs.should-build-docs }}
         uses: actions/checkout@v4
-      - name: Setup Environment
-        uses: pkgxdev/setup@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          +: classic.yarnpkg.com
+          node-version-file: .nvmrc
+      - name: Enable Corepack (Yarn 3)
+        run: corepack enable
       - name: Install Dependencies
-        if: ${{ needs.check-changes.outputs.should-build-docs }}
-        run: |-
-          yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Build Docs
-        if: ${{ needs.check-changes.outputs.should-build-docs }}
-        run: |-
-          yarn build
+        run: yarn build

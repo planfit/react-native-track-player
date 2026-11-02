@@ -36,6 +36,15 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
+// SwiftAudioEx 1.1.0 의 AVPlayerItemObserver 는 observer 등록·해제 상태(isObserving)를
+// 락 없이 다룬다. JS 호출(reset·stop 등)이 TurboModule 백그라운드 스레드에서 돌면
+// 메인 스레드의 트랙 종료 → 다음 트랙 처리와 겹쳐 같은 AVPlayerItem 의 observer 를
+// 두 번 지우다 NSRangeException 으로 앱이 종료된다(planfit DGP-1213).
+// 모든 메서드를 메인 큐에서 돌려 두 경로가 한 스레드에서 차례로 돌게 한다.
+- (dispatch_queue_t)methodQueue {
+  return dispatch_get_main_queue();
+}
+
 
 - (void)add:(nonnull NSArray *)tracks insertBeforeIndex:(nonnull NSNumber *)insertBeforeIndex resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
   [nativeTrackPlayer addWithTrackDicts:tracks before:insertBeforeIndex resolve:resolve reject:reject];

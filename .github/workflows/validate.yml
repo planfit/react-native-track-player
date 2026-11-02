@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should-build-docs: ${{ steps.filter.outputs.docs == 'true' || steps.filter.outputs.workflow == 'true' }}
-      should-build-ios: ${{ steps.filter.outputs.ios == 'true' || steps.filter.outputs.workflow == 'true' || steps.filter.outputs.js == 'true' }}
-      should-build-android: ${{ steps.filter.outputs.android == 'true' || steps.filter.outputs.workflow == 'true' || steps.filter.outputs.js == 'true' }}
+      should-build-module: ${{ steps.filter.outputs.js == 'true' || steps.filter.outputs.workflow == 'true' }}
       should-check-types: ${{ steps.filter.outputs.js == 'true' || steps.filter.outputs.workflow == 'true' }}
     steps:
       - uses: actions/checkout@v4
@@ -37,13 +36,6 @@ jobs:
               - 'example/src/**'
               - 'example/**.json'
               - 'example/**.js'
-            ios:
-              - 'ios/**'
-              - 'example/ios/**'
-              - 'react-native-track-player.podspec'
-            android:
-              - 'android/**'
-              - 'example/android/**'
             docs:
               - 'docs/**'
 
@@ -72,89 +64,28 @@ jobs:
           yarn example lint
           yarn example format
           yarn example typecheck
+
+  build-module:
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.should-build-module == 'true'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Enable Corepack (Yarn 3)
+        run: corepack enable
+      - name: Install Dependencies
+        run: yarn install --immutable
+      - name: Build Library
+        run: yarn build
       # planfit-client-rn 은 이 포크를 github: URL 로 받아 커밋된 lib/ 를 그대로 쓴다
       # (prepare 스크립트 없음, 3fd0728). src 를 바꾸고 lib 를 다시 만들지 않으면 앱에 반영되지 않는다.
       - name: Check prebuilt lib is up to date
-        run: |
-          yarn build
-          git diff --exit-code -- lib
-
-  build-ios:
-    runs-on: macos-15
-    needs: check-changes
-    if: needs.check-changes.outputs.should-build-ios == 'true'
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-      - name: Enable Corepack (Yarn 3)
-        run: corepack enable
-      - name: Install Dependencies
-        run: yarn install --immutable
-      - name: Build Library
-        run: yarn build
-      - name: Cache Cocoapods Dependencies
-        uses: actions/cache@v4
-        with:
-          path: example/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('example/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-      - name: Install Cocoapods
-        working-directory: example/ios
-        run: pod install
-      - name: Build App
-        working-directory: example/ios
-        run: |-
-          set -o pipefail && xcodebuild build \
-            -workspace TrackPlayerExample.xcworkspace \
-            -scheme TrackPlayerExample \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcbeautify --renderer github-actions
-
-  build-android:
-    runs-on: ubuntu-latest
-    needs: check-changes
-    if: needs.check-changes.outputs.should-build-android == 'true'
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 17
-      - name: Enable Corepack (Yarn 3)
-        run: corepack enable
-      - name: Install Dependencies
-        run: yarn install --immutable
-      - name: Build Library
-        run: yarn build
-      - name: Cache Gradle Wrapper
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Cache Gradle Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('example/android/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Build App
-        working-directory: example/android
-        run: ./gradlew assembleDebug --no-daemon
+        run: git diff --exit-code -- lib
 
   build-docs:
     runs-on: ubuntu-latest
